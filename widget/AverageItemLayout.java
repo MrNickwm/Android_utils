@@ -30,7 +30,7 @@ public class AverageItemLayout extends LinearLayout {
         density = context.getResources().getDisplayMetrics().density;
         setOrientation(HORIZONTAL);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AverageItemLayout);
-        columns = ta.getInteger(R.styleable.AverageItemLayout_count, 4);
+        columns = ta.getInteger(R.styleable.AverageItemLayout_columnCount, 4);
         textLength = ta.getInteger(R.styleable.AverageItemLayout_textLength, 5);
         ta.recycle();
     }
