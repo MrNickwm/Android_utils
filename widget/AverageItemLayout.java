@@ -13,13 +13,30 @@ import cn.bunnytrip.happy.R;
 /**
  * 子View宽度平均分配的横向LinearLayout
  * Created by Nickwm on 2016.
+ *
+ * <declare-styleable name="AverageItemLayout">
+        <attr name="columnCount" format="integer" />
+        <attr name="textLength" format="integer" />
+        <attr name="itemMargin" format="integer" />
+        <attr name="itemGravity" format="integer">
+            <enum name="center" value="0"/>
+            <enum name="left" value="1"/>
+        </attr>
+    </declare-styleable>
  */
 public class AverageItemLayout extends LinearLayout {
-    private int textLength = 5;
-    private int columns = 4;
+    private int mTextLength = 5;
+    private int mColumns = 4;
     private int mWidth;
     private int mHeight;
+    public static final int ITEM_GRAVITY_LEFT = 1;
+    public static final int ITEM_GRAVITY_CENTER = 0;
+    private int mItemGravity = ITEM_GRAVITY_CENTER;
+
+
     private float density;
+    private int mItemMargin;
+
 
     public AverageItemLayout(Context context) {
         this(context, null);
@@ -28,20 +45,24 @@ public class AverageItemLayout extends LinearLayout {
     public AverageItemLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         density = context.getResources().getDisplayMetrics().density;
+        mItemMargin = (int) (12 * density);
         setOrientation(HORIZONTAL);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AverageItemLayout);
-        columns = ta.getInteger(R.styleable.AverageItemLayout_columnCount, 4);
-        textLength = ta.getInteger(R.styleable.AverageItemLayout_textLength, 5);
+        mColumns = ta.getInteger(R.styleable.AverageItemLayout_columnCount, 4);
+        mTextLength = ta.getInteger(R.styleable.AverageItemLayout_textLength, 5);
+        mItemMargin = ta.getInteger(R.styleable.AverageItemLayout_itemMargin, 12);
+        mItemGravity = ta.getInteger(R.styleable.AverageItemLayout_itemGravity, ITEM_GRAVITY_CENTER);
         ta.recycle();
     }
 
     /**
      * 设置单行的Item数量
      *
-     * @param childCount
+     * @param columns
      */
-    public void setOneLineChildCount(int childCount) {
-        this.columns = childCount;
+    public void setOneLineChildCount(int columns) {
+        this.mColumns = columns;
+        invalidate();
     }
 
     /**
@@ -50,7 +71,24 @@ public class AverageItemLayout extends LinearLayout {
      * @param length
      */
     public void setChildTextLength(int length) {
-        this.textLength = length;
+        this.mTextLength = length;
+    }
+
+    /**
+     * 设置方向
+     * @param gravity
+     */
+    public void setItemGravity(int gravity) {
+        this.mItemGravity = gravity;
+        invalidate();
+    }
+
+    /**
+     * 设置Item的间距
+     * @param margin
+     */
+    public void setItemMargin(int margin) {
+        this.mItemMargin = (int) (margin * density);
     }
 
     @Override
@@ -63,7 +101,7 @@ public class AverageItemLayout extends LinearLayout {
         }
         measureChild(childView, widthMeasureSpec, heightMeasureSpec);
         int childHeight = childView.getMeasuredHeight();
-        int line = getChildCount() % columns == 0 ? getChildCount() / columns : getChildCount() / columns + 1;
+        int line = getChildCount() % mColumns == 0 ? getChildCount() / mColumns : getChildCount() / mColumns + 1;
         int topMarging = (int) (12 * density);
         mHeight = line * childHeight + (line - 1) * topMarging;
         setMeasuredDimension(mWidth, mHeight);
@@ -76,23 +114,23 @@ public class AverageItemLayout extends LinearLayout {
         if (childCount <= 0) {
             return;
         }
-        int margin = (int) (12 * density);
         int topMarging = (int) (12 * density);
-        int childWidth = (mWidth - columns * margin) / columns;
+        int childWidth = (mWidth - mColumns * mItemMargin) / mColumns;
         int childHeight = getChildAt(0).getMeasuredHeight();
 
         int leftMargin = 0;
-        if (childCount < columns) {
-            leftMargin = (columns - childCount) * (childWidth + margin) / 2;
+        if (mItemGravity ==ITEM_GRAVITY_CENTER && childCount < mColumns) {
+            // 判断居中还是左对齐
+            leftMargin = (mColumns - childCount) * (childWidth + mItemMargin) / 2;
         }
 
         for (int i = 0; i < childCount; i++) {
-            int line = i / columns;
+            int line = i / mColumns;
             int childBottom = (line + 1) * childHeight + line * topMarging;
-            int position = i % columns;
-            int left = position * (childWidth + margin) + leftMargin;
+            int position = i % mColumns;
+            int left = position * (childWidth + mItemMargin) + leftMargin;
             int top = line * (childHeight + topMarging);
-            int right = (position + 1) * childWidth + (position * margin) + leftMargin;
+            int right = (position + 1) * childWidth + (position * mItemMargin) + leftMargin;
             int bottom = childBottom;
             getChildAt(i).layout(left, top, right, bottom);
 
@@ -104,8 +142,8 @@ public class AverageItemLayout extends LinearLayout {
                 tv.setIncludeFontPadding(false);
                 tv.setSingleLine();
                 tv.setGravity(Gravity.CENTER);
-                if (tv.getText().toString().length() > textLength) {
-                    tv.setText(tv.getText().toString().substring(0, textLength) + "..");
+                if (tv.getText().toString().length() > mTextLength) {
+                    tv.setText(tv.getText().toString().substring(0, mTextLength) + "..");
                 }
             }
         }
