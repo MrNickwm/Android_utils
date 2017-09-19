@@ -1,4 +1,4 @@
-package com.ziroom.ziroomcustomer.findhouse.widget;
+package cn.bunnytrip.happy.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
