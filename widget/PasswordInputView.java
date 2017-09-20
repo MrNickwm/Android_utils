@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.freelxl.baselibrary.util.ToastUtil;
-import com.ziroom.ziroomcustomer.R;
+import cn.bunnytrip.happy.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,6 +189,10 @@ public class PasswordInputView extends RelativeLayout {
     private RelativeLayout.LayoutParams getMatchParentParams() {
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         return lp;
+    }
+
+    public String getPassword() {
+        return mBuilder.toString();
     }
 
 
